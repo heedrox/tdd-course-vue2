@@ -11,8 +11,10 @@
     - en la cabecera: botón para modificar settings
     
 - Una página de feeds se puede filtrar por texto
+- El feed se actualiza cada 5 minutos
 
 - Al pulsar sobre un autor, se puede ver la página del profile.
   Desde la página del autor, se puede seguir a éste.
   
+
 
