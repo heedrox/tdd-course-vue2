@@ -13,4 +13,10 @@ describe('App', () => {
 
     expect(app.find('[data-testid=footer]').exists()).toBeTruthy();
   });
+
+  it('shows a banner', () => {
+    const app = mount(App);
+
+    expect(app.find('[data-testid=banner]').exists()).toBeTruthy();
+  });
 });
