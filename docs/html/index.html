@@ -21,6 +21,16 @@
             <li class="nav-item">
               <a class="nav-link active" href="#">Global Feed</a>
             </li>
+            <li class="nav-item" style="flex-grow: 1">
+              <div class="input-group">
+                <div class="input-group-prepend ml-4">
+                  <span class="input-group-text" >
+                    <i class="ion-search" ></i>
+                  </span>
+                </div>
+                <input class="form-control form-control-sm" type="text" placeholder="Highlight text in the feeds of this page...">
+              </div>
+            </li>
           </ul>
         </div>
 
@@ -54,12 +64,24 @@
             </button>
           </div>
           <a href="post.html" class="preview-link">
-            <h1>The song you won't ever stop singing. No matter how hard you try.</h1>
+            <h1>
+              <i title="More than 30 likes!" class="text-primary ion-star mx-1"></i>
+              The song you won't ever stop singing. No matter how hard you try.
+            </h1>
             <p>In my demo, the holy grail layout is nested inside a document, so there's no body or main tags like shown above. Regardless, we're interested in the class names and the appearance of sections in the markup as opposed to the actual elements themselves. In particular, take note of the modifier classes used on the two sidebars, and the trivial order in which they appear in the markup. Let's break this down to paint a clear picture of what's happening...</p>
             <span>Read more...</span>
           </a>
         </div>
 
+        <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+          <li class="page-item"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+        </nav>
       </div>
 
       <div class="col-md-3">
