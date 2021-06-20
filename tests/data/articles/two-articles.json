@@ -1,0 +1,43 @@
+{
+  "articles": [
+    {
+      "slug": "slug-2",
+      "title": "title-2",
+      "description": "description-2",
+      "body": "body-2",
+      "tagList": [
+        "tag21", "tag22"
+      ],
+      "createdAt": "2021-06-20T07:39:39.120Z",
+      "updatedAt": "2021-06-20T07:39:39.120Z",
+      "favorited": true,
+      "favoritesCount": 29,
+      "author": {
+        "username": "author1",
+        "bio": "bio1",
+        "image": "image1",
+        "following": true
+      }
+    },
+    {
+      "slug": "slug-1",
+      "title": "title-1",
+      "description": "description-1",
+      "body": "body-1",
+      "tagList": [
+        "tag11", "tag12"
+      ],
+      "createdAt": "2021-06-20T07:39:39.120Z",
+      "updatedAt": "2021-06-20T07:39:39.120Z",
+      "favorited": true,
+      "favoritesCount": 30,
+      "author": {
+        "username": "author1",
+        "bio": "bio1",
+        "image": "image1",
+        "following": true
+      }
+    }
+  ],
+  "articlesCount": 2
+}

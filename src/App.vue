@@ -1,36 +1,38 @@
 <template>
   <div id="app">
-    <TopHeader />
+    <TopHeader/>
     <div class="home-page">
-      <AppBanner />
+      <AppBanner/>
 
       <div class="container page">
         <div class="row">
 
-          <div class="post-preview" data-testid="feed-post" v-for="article in articles" :key="article.slug">
-            <div class="post-meta">
-              <a href="profile.html"><img data-testid="author-image" :src="article.author.image" /></a>
-              <div class="info">
-                <a href="profile.html" class="author" data-testid="author-username">{{ article.author.username }}</a>
-                <span class="date" data-testid="post-date">{{ toPrettyDate(article.createdAt) }}</span>
+          <div class="col-md-12">
+            <div class="post-preview" data-testid="feed-post" v-for="article in articles" :key="article.slug">
+              <div class="post-meta">
+                <a href="profile.html"><img data-testid="author-image" :src="article.author.image"/></a>
+                <div class="info">
+                  <a href="profile.html" class="author" data-testid="author-username">{{ article.author.username }}</a>
+                  <span class="date" data-testid="post-date">{{ toPrettyDate(article.createdAt) }}</span>
+                </div>
+                <button class="btn btn-outline-primary btn-sm pull-xs-right" data-testid="post-favorites">
+                  <i class="ion-heart"></i> {{ article.favoritesCount }}
+                </button>
               </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 32
-              </button>
+              <a href="post.html" class="preview-link">
+                <h1 data-testid="post-title">
+                  <i v-if="article.favoritesCount >= 30" title="More than 30 likes!" class="text-primary ion-star mx-1" data-testid="post-star"></i>
+                  {{ article.title }}
+                </h1>
+                <p data-testid="post-description">{{ article.description }}</p>
+                <span data-testid="post-readmore">{{ $t('feed.post.read-more') }}</span>
+              </a>
             </div>
-            <a href="post.html" class="preview-link">
-              <h1>
-                <i title="More than 30 likes!" class="text-primary ion-star mx-1"></i>
-                The song you won't ever stop singing. No matter how hard you try.
-              </h1>
-              <p>In my demo, the holy grail layout is nested inside a document, so there's no body or main tags like shown above. Regardless, we're interested in the class names and the appearance of sections in the markup as opposed to the actual elements themselves. In particular, take note of the modifier classes used on the two sidebars, and the trivial order in which they appear in the markup. Let's break this down to paint a clear picture of what's happening...</p>
-              <span>Read more...</span>
-            </a>
           </div>
         </div>
       </div>
     </div>
-    <BottomFooter />
+    <BottomFooter/>
   </div>
 </template>
 
