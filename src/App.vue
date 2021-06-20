@@ -7,7 +7,7 @@
       <div class="container page">
         <div class="row">
 
-          <div class="post-preview" v-for="article in articles" :key="article.slug">
+          <div class="post-preview" data-testid="feed-post" v-for="article in articles" :key="article.slug">
             x
           </div>
         </div>
