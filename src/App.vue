@@ -8,6 +8,9 @@
         <div class="row">
 
           <div class="col-md-12">
+            <div v-if="state === 'LOADING'" data-testid="feed-loading">
+              {{ $t('feed.loading') }}
+            </div>
             <div class="post-preview" data-testid="feed-post" v-for="article in articles" :key="article.slug">
               <div class="post-meta">
                 <a href="profile.html"><img data-testid="author-image" :src="article.author.image"/></a>
@@ -52,12 +55,14 @@ export default {
   },
   data() {
     return {
+      state: 'LOADING',
       articles: []
     };
   },
   async mounted() {
     const articles = await axios.get('/articles');
     this.articles = articles.data.articles;
+    this.state = 'LOADED';
   },
   methods: {
     toPrettyDate(date) {

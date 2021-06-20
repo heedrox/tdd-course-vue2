@@ -6,6 +6,7 @@ import ONE_ARTICLE from '../data/articles/one-article.json';
 import TWO_ARTICLES from '../data/articles/two-articles.json';
 
 const FEED_POST_SELECTOR = '[data-testid=feed-post]';
+const LOADING_SELECTOR = '[data-testid=feed-loading]';
 
 describe('Global Feed', () => {
 
@@ -16,6 +17,7 @@ describe('Global Feed', () => {
     await flushPromises();
 
     expect(app.findAll(FEED_POST_SELECTOR).length).toEqual(0);
+    expect(app.find(LOADING_SELECTOR).exists()).toBeFalsy();
   });
 
   it('shows 1 post', async () => {
@@ -69,4 +71,11 @@ describe('Global Feed', () => {
 
   });
 
+  it('shows loading until page is loaded (promises not fulfilled)', () => {
+    mockAxios.onGet('/articles').reply(200, ONE_ARTICLE);
+
+    const app = mount(App);
+
+    expect(app.find(LOADING_SELECTOR).exists()).toBeTruthy();
+  });
 });
