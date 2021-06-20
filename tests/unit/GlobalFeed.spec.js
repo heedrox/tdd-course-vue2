@@ -35,6 +35,8 @@ describe('Global Feed', () => {
 
   it('shows a star if post has more than 30 favorites', async () => {
     mockAxios.onGet('/articles').reply(200, TWO_ARTICLES);
+    TWO_ARTICLES.articles[0].favoritesCount = 29;
+    TWO_ARTICLES.articles[1].favoritesCount = 30;
 
     const app = mount(App);
     await flushPromises();
