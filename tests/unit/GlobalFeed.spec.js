@@ -1,21 +1,32 @@
-import { mount, config } from '@vue/test-utils';
+import { mount, config, createLocalVue } from '@vue/test-utils';
 import App from '@/App';
 import flushPromises from 'flush-promises';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios';
+import VueRouter from 'vue-router';
 import ZERO_ARTICLES from '../data/articles/zero-articles.json';
 import ONE_ARTICLE from '../data/articles/one-article.json';
 import TWO_ARTICLES from '../data/articles/two-articles.json';
-import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios';
+import HomePage from '@/components/HomePage';
 
 const FEED_POST_SELECTOR = '[data-testid=feed-post]';
 const LOADING_SELECTOR = '[data-testid=feed-loading]';
 
+
 describe('Global Feed', () => {
+
+  let localVue;
+  const router = new VueRouter({ routes: [ { path: '/', component: HomePage } ] } );
+
+  beforeEach(() => {
+    localVue = createLocalVue();
+    localVue.use(VueRouter);
+  });
 
   it('shows 0 posts', async () => {
     mockAxios.onGet('/articles').reply(200, ZERO_ARTICLES);
 
-    const app = mount(App);
+    const app = mount(App, { localVue, router });
     await flushPromises();
 
     expect(app.findAll(FEED_POST_SELECTOR).length).toEqual(0);
@@ -25,7 +36,7 @@ describe('Global Feed', () => {
   it('shows 1 post', async () => {
     mockAxios.onGet('/articles').reply(200, ONE_ARTICLE);
 
-    const app = mount(App);
+    const app = mount(App, { localVue, router });
     await flushPromises();
 
     expect(app.findAll(FEED_POST_SELECTOR).length).toEqual(1);
@@ -42,7 +53,7 @@ describe('Global Feed', () => {
     TWO_ARTICLES.articles[0].favoritesCount = 29;
     TWO_ARTICLES.articles[1].favoritesCount = 30;
 
-    const app = mount(App);
+    const app = mount(App, { localVue, router });
     await flushPromises();
 
     expect(app.findAll(FEED_POST_SELECTOR).length).toEqual(2);
@@ -55,7 +66,7 @@ describe('Global Feed', () => {
       mockAxios.onGet('/articles').reply(200, ONE_ARTICLE);
       config.mocks.$i18n.locale = 'en';
 
-      const app = mount(App);
+      const app = mount(App, { localVue, router });
       await flushPromises();
 
       expect(app.findAll(FEED_POST_SELECTOR).at(0).find('[data-testid=post-date]').text()).toBe('June 20th, 2021');
@@ -65,7 +76,7 @@ describe('Global Feed', () => {
       mockAxios.onGet('/articles').reply(200, ONE_ARTICLE);
       config.mocks.$i18n.locale = 'es';
 
-      const app = mount(App);
+      const app = mount(App, { localVue, router });
       await flushPromises();
 
       expect(app.findAll(FEED_POST_SELECTOR).at(0).find('[data-testid=post-date]').text()).toBe('junio 20º, 2021');
@@ -78,7 +89,7 @@ describe('Global Feed', () => {
     const mockAxiosDelayed = new MockAdapter(axios, { delayResponse: 2000 });
     mockAxiosDelayed.onGet('/articles').reply(200, ONE_ARTICLE);
 
-    const app = mount(App);
+    const app = mount(App, { localVue, router });
     await flushPromises();
 
     expect(app.find(LOADING_SELECTOR).exists()).toBeTruthy();
@@ -87,5 +98,36 @@ describe('Global Feed', () => {
     await flushPromises();
 
     expect(app.find(LOADING_SELECTOR).exists()).toBeFalsy();
+  });
+
+  it.skip('links to posts - asi era al principio sin localVue y sin router-view', async () => {
+    mockAxios.onGet('/articles').reply(200, ONE_ARTICLE);
+    config.mocks.$i18n.locale = 'es';
+    const $router = { push: jest.fn() };
+    const app = mount(App, {
+      router,
+      mocks: {
+          $router
+        }
+    });
+    await flushPromises();
+
+    await app.findAll('[data-testid=post-link]').at(0).trigger('click');
+
+    expect($router.push).tohaveBeenCalledWith({ path: '/post/slug-1 '});
+  });
+
+  it('links to posts', async () => {
+    mockAxios.onGet('/articles').reply(200, ONE_ARTICLE);
+    config.mocks.$i18n.locale = 'es';
+    const app = mount(App, {
+      localVue,
+      router
+    });
+    await flushPromises();
+
+    await app.findAll('[data-testid=post-link]').at(0).trigger('click');
+
+    expect(app.vm.$route.path).toBe('/post/slug-1');
   });
 });

@@ -1,11 +1,11 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import App from '@/App';
+import HomePage from '@/components/HomePage';
 
 Vue.use(VueRouter);
 
 const routes = [
-  { path: '/', component: App }
+  { path: '/', component: HomePage }
 ];
 
 const router =new VueRouter({ routes });
