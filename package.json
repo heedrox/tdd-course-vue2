@@ -38,6 +38,9 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
+    "globals": {
+      "mockAxios": true
+    },
     "parserOptions": {
       "parser": "babel-eslint"
     },

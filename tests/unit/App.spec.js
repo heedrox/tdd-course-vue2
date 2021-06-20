@@ -1,11 +1,8 @@
 import { mount } from '@vue/test-utils';
 import App from '@/App';
-import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios';
 
 beforeEach(() => {
-  const mock = new MockAdapter(axios);
-  mock.onAny().reply(200, { articles: [] });
+  mockAxios.onGet('/articles').reply(200, { articles: [] });
 });
 
 describe('App', () => {
