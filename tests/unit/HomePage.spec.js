@@ -1,5 +1,4 @@
 import { config, mount } from '@vue/test-utils';
-import App from '@/App';
 import flushPromises from 'flush-promises';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
