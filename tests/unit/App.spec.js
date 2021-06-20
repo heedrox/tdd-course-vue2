@@ -22,11 +22,4 @@ describe('App', () => {
     expect(app.find('[data-testid=footer]').exists()).toBeTruthy();
   });
 
-  it.skip('shows a banner', () => {
-    const app = mount(App, {
-      stubs: ['router-link', 'router-view']
-    });
-
-    expect(app.find('[data-testid=banner]').exists()).toBeTruthy();
-  });
 });
