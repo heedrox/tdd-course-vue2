@@ -4,6 +4,8 @@ import flushPromises from 'flush-promises';
 import ZERO_ARTICLES from '../data/articles/zero-articles.json';
 import ONE_ARTICLE from '../data/articles/one-article.json';
 import TWO_ARTICLES from '../data/articles/two-articles.json';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios';
 
 const FEED_POST_SELECTOR = '[data-testid=feed-post]';
 const LOADING_SELECTOR = '[data-testid=feed-loading]';
@@ -71,11 +73,19 @@ describe('Global Feed', () => {
 
   });
 
-  it('shows loading until page is loaded (promises not fulfilled)', () => {
-    mockAxios.onGet('/articles').reply(200, ONE_ARTICLE);
+  it('shows loading until page is loaded', async () => {
+    jest.useFakeTimers();
+    const mockAxiosDelayed = new MockAdapter(axios, { delayResponse: 2000 });
+    mockAxiosDelayed.onGet('/articles').reply(200, ONE_ARTICLE);
 
     const app = mount(App);
+    await flushPromises();
 
     expect(app.find(LOADING_SELECTOR).exists()).toBeTruthy();
+
+    jest.advanceTimersByTime(2001);
+    await flushPromises();
+
+    expect(app.find(LOADING_SELECTOR).exists()).toBeFalsy();
   });
 });
