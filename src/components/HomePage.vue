@@ -33,8 +33,9 @@
           <nav aria-label="Page navigation example" data-testid="feed-pagination" v-if="articlesCount > 10">
             <ul class="pagination">
               <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-              <li :class="paginationClassesFor(page)" data-testid="page-number" v-for="page in pages" :key="`numpage-${page}`"><a
-                  class="page-link" href="#">{{ page }}</a></li>
+              <li :class="paginationClassesFor(page)" data-testid="page-number" v-for="page in pages" :key="`numpage-${page}`">
+                <a class="page-link" @click="selectPagination(page)">{{ page }}</a>
+              </li>
               <li class="page-item"><a class="page-link" href="#">Next</a></li>
             </ul>
           </nav>
@@ -61,7 +62,8 @@ export default {
     return {
       state: 'LOADING',
       articles: [],
-      articlesCount: 0
+      articlesCount: 0,
+      activePage : 1
     };
   },
   async mounted() {
@@ -74,7 +76,8 @@ export default {
     paginationClassesFor(page) {
       return {
         'page-item': true,
-        'active': page === 1
+        'page-link': true,
+        'active': page === this.activePage
       };
     },
     toPrettyDate(date) {
@@ -83,6 +86,9 @@ export default {
     },
     clickPost(slug) {
       this.$router.push({ path: `/post/${slug}` });
+    },
+    selectPagination(page) {
+      this.activePage = page;
     }
   }
 };
