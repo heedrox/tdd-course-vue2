@@ -32,7 +32,7 @@
           </div>
           <nav aria-label="Page navigation example" data-testid="feed-pagination" v-if="articlesCount > 10">
             <ul class="pagination">
-              <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+              <li class="page-item" v-if="ifPrevious" data-testid="pagination-previous"><a class="page-link" href="#">Previous</a></li>
               <li :class="paginationClassesFor(page)" data-testid="page-number" v-for="page in pages" :key="`numpage-${page}`">
                 <a class="page-link" @click="selectPagination(page)">{{ page }}</a>
               </li>
@@ -57,6 +57,7 @@ export default {
   computed: {
     numPages() { return Math.floor((this.articlesCount-1) / 10) + 1; },
     pages() { return [...Array(this.numPages).keys()].map((_, idx) => idx + 1); },
+    ifPrevious() { return this.activePage > 1; }
   },
   data() {
     return {
@@ -67,16 +68,13 @@ export default {
     };
   },
   async mounted() {
-    const articles = await axios.get('/articles', { params: { limit: 10 } });
-    this.articles = articles.data.articles;
-    this.articlesCount = articles.data.articlesCount;
+    await this.loadArticles(1);
     this.state = 'LOADED';
   },
   methods: {
     paginationClassesFor(page) {
       return {
         'page-item': true,
-        'page-link': true,
         'active': page === this.activePage
       };
     },
@@ -87,8 +85,14 @@ export default {
     clickPost(slug) {
       this.$router.push({ path: `/post/${slug}` });
     },
-    selectPagination(page) {
+    async selectPagination(page) {
       this.activePage = page;
+      await this.loadArticles(page);
+    },
+    async loadArticles(numPage) {
+      const articles = await axios.get('/articles', { params: { limit: 10, offset: (numPage-1) * 10 } });
+      this.articles = articles.data.articles;
+      this.articlesCount = articles.data.articlesCount;
     }
   }
 };

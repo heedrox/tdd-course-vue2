@@ -5,6 +5,7 @@ import TWO_ARTICLES from '../data/articles/two-articles.json';
 import HomePage from '@/components/HomePage';
 
 const PAGINATION_SELECTOR = '[data-testid=feed-pagination]';
+const PAGINATION_PREVIOUS_SELECTOR = '[data-testid=pagination-previous]';
 
 const changeSlug = (article, idx) => ({
   ...article,
@@ -28,16 +29,6 @@ describe('Home Page - Feeds pagination', () => {
     await flushPromises();
 
     expect(mockAxios.history.get[0].params.limit).toEqual(10);
-  });
-
-  it('does not show previous when active page is 1', async () => {
-    const articles = buildArticles(10, 20);
-    mockAxios.onGet('/articles').reply(200, articles);
-
-    const app = mount(HomePage);
-    await flushPromises();
-
-    expect(app.find('[data-testid=previous]').exists()).toBeFalsy();
   });
 
   it.each`
@@ -81,6 +72,49 @@ describe('Home Page - Feeds pagination', () => {
 
       expect(app.find('.active[data-testid=page-number]').text()).toEqual('2');
     });
+
+    it.each`
+      pageNumberClicked | offsetRequested
+      ${1}              | ${10}
+      ${2}              | ${20}
+      ${3}              | ${30}
+    `('reloads articles when another page is clicked', async ({pageNumberClicked, offsetRequested}) => {
+      const articles = buildArticles(10, 40);
+      mockAxios.onGet('/articles').reply(200, articles);
+      const app = mount(HomePage);
+      await flushPromises();
+
+      await app.findAll('[data-testid=page-number] a').at(pageNumberClicked).trigger('click');
+      await flushPromises();
+
+      expect(mockAxios.history.get.length).toEqual(2);
+      expect(mockAxios.history.get[0].params.offset).toEqual(0);
+      expect(mockAxios.history.get[1].params.offset).toEqual(offsetRequested);
+    });
+
+    it('shows previous when active page is greater than 1', async () => {
+      const articles = buildArticles(10, 20);
+      mockAxios.onGet('/articles').reply(200, articles);
+
+      const app = mount(HomePage);
+      await flushPromises();
+
+      await app.findAll('[data-testid=page-number] a').at(1).trigger('click');
+      await flushPromises();
+
+      expect(app.find(PAGINATION_PREVIOUS_SELECTOR).exists()).toBeTruthy();
+    });
+
+    it('does not show previous when active page is 1', async () => {
+      const articles = buildArticles(10, 20);
+      mockAxios.onGet('/articles').reply(200, articles);
+
+      const app = mount(HomePage);
+      await flushPromises();
+
+      expect(app.find(PAGINATION_PREVIOUS_SELECTOR).exists()).toBeFalsy();
+    });
+
   });
   it('does not show pagination when <10 posts', async () => {
     mockAxios.onGet('/articles').reply(200, TWO_ARTICLES);
