@@ -33,9 +33,8 @@
           <nav aria-label="Page navigation example" data-testid="feed-pagination" v-if="articlesCount > 10">
             <ul class="pagination">
               <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-              <li class="page-item" data-testid="page-number"><a class="page-link" href="#">1</a></li>
-              <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item" data-testid="page-number" v-for="page in pages" :key="`numpage-${page}`"><a
+                  class="page-link" href="#">{{ page }}</a></li>
               <li class="page-item"><a class="page-link" href="#">Next</a></li>
             </ul>
           </nav>
@@ -54,6 +53,10 @@ export default {
   components: {
     AppBanner,
   },
+  computed: {
+    numPages() { return Math.floor(this.articlesCount / 10) + 1; },
+    pages() { return [...Array(this.numPages).keys()].map((_, idx) => idx + 1); }
+  },
   data() {
     return {
       state: 'LOADING',
@@ -62,7 +65,7 @@ export default {
     };
   },
   async mounted() {
-    const articles = await axios.get('/articles', { params: { limit: 10 } } );
+    const articles = await axios.get('/articles', { params: { limit: 10 } });
     this.articles = articles.data.articles;
     this.articlesCount = articles.data.articlesCount;
     this.state = 'LOADED';

@@ -30,16 +30,21 @@ describe('Home Page - Feeds pagination', () => {
     expect(mockAxios.history.get[0].params.limit).toEqual(10);
   });
 
-  it.skip.each`
-    numArticlesCount | 
-  `('shows number of pages', async () => {
-    const articles = buildArticles(10, 11);
+  it.each`
+    numArticlesCount | pages
+    ${11}            | ${['1', '2']}
+    ${21}            | ${['1', '2', '3']}
+  `('shows number of pages', async ({ numArticlesCount, pages }) => {
+    const articles = buildArticles(10, numArticlesCount);
     mockAxios.onGet('/articles').reply(200, articles);
-
     const app = mount(HomePage);
     await flushPromises();
 
-    expect(app.findAll('[data-testid=page-number]').length).toEqual(1);
+    expect(app.findAll('[data-testid=page-number]').length).toEqual(pages.length);
+    for (let a = 0; a < pages.length; a++) {
+      expect(app.findAll('[data-testid=page-number').at(a).text()).toEqual(pages[a]);
+    }
+
   });
 
   it('does not show pagination when <10 posts', async () => {
