@@ -33,6 +33,7 @@ describe('Home Page - Feeds pagination', () => {
   it.each`
     numArticlesCount | pages
     ${11}            | ${['1', '2']}
+    ${20}            | ${['1', '2']}
     ${21}            | ${['1', '2', '3']}
   `('shows number of pages', async ({ numArticlesCount, pages }) => {
     const articles = buildArticles(10, numArticlesCount);
@@ -47,6 +48,18 @@ describe('Home Page - Feeds pagination', () => {
 
   });
 
+  describe('Active Page', () => {
+    it('is the 1st page by default', async () => {
+      const articles = buildArticles(10, 30);
+      mockAxios.onGet('/articles').reply(200, articles);
+
+      const app = mount(HomePage);
+      await flushPromises();
+
+      expect(app.findAll('.active[data-testid=page-number]').length).toEqual(1);
+      expect(app.find('.active[data-testid=page-number]').text()).toEqual('1');
+    });
+  });
   it('does not show pagination when <10 posts', async () => {
     mockAxios.onGet('/articles').reply(200, TWO_ARTICLES);
 

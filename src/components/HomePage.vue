@@ -33,7 +33,7 @@
           <nav aria-label="Page navigation example" data-testid="feed-pagination" v-if="articlesCount > 10">
             <ul class="pagination">
               <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-              <li class="page-item" data-testid="page-number" v-for="page in pages" :key="`numpage-${page}`"><a
+              <li :class="paginationClassesFor(page)" data-testid="page-number" v-for="page in pages" :key="`numpage-${page}`"><a
                   class="page-link" href="#">{{ page }}</a></li>
               <li class="page-item"><a class="page-link" href="#">Next</a></li>
             </ul>
@@ -54,8 +54,8 @@ export default {
     AppBanner,
   },
   computed: {
-    numPages() { return Math.floor(this.articlesCount / 10) + 1; },
-    pages() { return [...Array(this.numPages).keys()].map((_, idx) => idx + 1); }
+    numPages() { return Math.floor((this.articlesCount-1) / 10) + 1; },
+    pages() { return [...Array(this.numPages).keys()].map((_, idx) => idx + 1); },
   },
   data() {
     return {
@@ -71,6 +71,12 @@ export default {
     this.state = 'LOADED';
   },
   methods: {
+    paginationClassesFor(page) {
+      return {
+        'page-item': true,
+        'active': page === 1
+      };
+    },
     toPrettyDate(date) {
       moment.locale(this.$i18n.locale);
       return moment(date).format('MMMM Do, YYYY');
