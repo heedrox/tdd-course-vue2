@@ -30,7 +30,7 @@
               <span data-testid="post-readmore">{{ $t('feed.post.read-more') }}</span>
             </a>
           </div>
-          <nav aria-label="Page navigation example" data-testid="feed-pagination" v-if="articlesCount > 10">
+          <nav aria-label="Page navigation example" data-testid="feed-pagination" v-if="numPages > 1">
             <ul class="pagination">
               <li class="page-item" v-if="ifPrevious" data-testid="pagination-previous"><a class="page-link" href="#">Previous</a></li>
               <li :class="paginationClassesFor(page)" data-testid="page-number" v-for="page in pages" :key="`numpage-${page}`">
