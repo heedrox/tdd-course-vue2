@@ -6,6 +6,7 @@ import HomePage from '@/components/HomePage';
 
 const PAGINATION_SELECTOR = '[data-testid=feed-pagination]';
 const PAGINATION_PREVIOUS_SELECTOR = '[data-testid=pagination-previous]';
+const PAGINATION_NEXT_SELECTOR = '[data-testid=pagination-next]';
 
 const changeSlug = (article, idx) => ({
   ...article,
@@ -113,6 +114,29 @@ describe('Home Page - Feeds pagination', () => {
       await flushPromises();
 
       expect(app.find(PAGINATION_PREVIOUS_SELECTOR).exists()).toBeFalsy();
+    });
+
+    it('shows next button', async () => {
+      const articles = buildArticles(10, 31);
+      mockAxios.onGet('/articles').reply(200, articles);
+
+      const app = mount(HomePage);
+      await flushPromises();
+
+      expect(app.find(PAGINATION_NEXT_SELECTOR).exists()).toBeTruthy();
+    });
+
+    it('does not show next when active page is last', async () => {
+      const articles = buildArticles(10, 31);
+      mockAxios.onGet('/articles').reply(200, articles);
+
+      const app = mount(HomePage);
+      await flushPromises();
+
+      await app.findAll('[data-testid=page-number] a').at(3).trigger('click');
+      await flushPromises();
+
+      expect(app.find(PAGINATION_NEXT_SELECTOR).exists()).toBeFalsy();
     });
 
   });

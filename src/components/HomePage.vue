@@ -36,7 +36,7 @@
               <li :class="paginationClassesFor(page)" data-testid="page-number" v-for="page in pages" :key="`numpage-${page}`">
                 <a class="page-link" @click="selectPagination(page)">{{ page }}</a>
               </li>
-              <li class="page-item"><a class="page-link" href="#">Next</a></li>
+              <li class="page-item" v-if="ifNext" data-testid="pagination-next"><a class="page-link" href="#">Next</a></li>
             </ul>
           </nav>
         </div>
@@ -57,7 +57,8 @@ export default {
   computed: {
     numPages() { return Math.floor((this.articlesCount-1) / 10) + 1; },
     pages() { return [...Array(this.numPages).keys()].map((_, idx) => idx + 1); },
-    ifPrevious() { return this.activePage > 1; }
+    ifPrevious() { return this.activePage > 1; },
+    ifNext() { return this.activePage < this.numPages ; }
   },
   data() {
     return {
