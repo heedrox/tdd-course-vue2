@@ -7,6 +7,7 @@ import HomePage from '@/components/HomePage';
 const PAGINATION_SELECTOR = '[data-testid=feed-pagination]';
 const PAGINATION_PREVIOUS_SELECTOR = '[data-testid=pagination-previous]';
 const PAGINATION_NEXT_SELECTOR = '[data-testid=pagination-next]';
+const ACTIVE_PAGE_SELECTOR = '.active[data-testid=page-number]';
 
 const changeSlug = (article, idx) => ({
   ...article,
@@ -78,8 +79,8 @@ describe('Home Page - Feeds pagination', () => {
       const app = mount(HomePage);
       await flushPromises();
 
-      expect(app.findAll('.active[data-testid=page-number]').length).toEqual(1);
-      expect(app.find('.active[data-testid=page-number]').text()).toEqual('1');
+      expect(app.findAll(ACTIVE_PAGE_SELECTOR).length).toEqual(1);
+      expect(app.find(ACTIVE_PAGE_SELECTOR).text()).toEqual('1');
     });
     it('actives 2nd page when clicked', async () => {
       const articles = buildArticles(10, 30);
@@ -90,7 +91,7 @@ describe('Home Page - Feeds pagination', () => {
       await app.findAll('[data-testid=page-number] a').at(1).trigger('click');
       await flushPromises();
 
-      expect(app.find('.active[data-testid=page-number]').text()).toEqual('2');
+      expect(app.find(ACTIVE_PAGE_SELECTOR).text()).toEqual('2');
     });
 
     it.each`
@@ -157,6 +158,38 @@ describe('Home Page - Feeds pagination', () => {
         await flushPromises();
 
         expect(app.find(PAGINATION_NEXT_SELECTOR).exists()).toBeFalsy();
+      });
+
+      it('changes pagination when previous is pressed', async () => {
+        const articles = buildArticles(10, 40);
+        mockAxios.onGet('/articles').reply(200, articles);
+        const app = mount(HomePage);
+        await flushPromises();
+        await app.findAll('[data-testid=page-number] a').at(2).trigger('click');
+        await flushPromises();
+
+        await app.find(PAGINATION_PREVIOUS_SELECTOR).find('a').trigger('click');
+        await flushPromises();
+
+        expect(mockAxios.history.get.length).toEqual(3);
+        expect(mockAxios.history.get[2].params.offset).toEqual(10);
+        expect(app.find(ACTIVE_PAGE_SELECTOR).text()).toEqual('2');
+      });
+
+      it('changes pagination when NEXT is pressed', async () => {
+        const articles = buildArticles(10, 40);
+        mockAxios.onGet('/articles').reply(200, articles);
+        const app = mount(HomePage);
+        await flushPromises();
+        await app.findAll('[data-testid=page-number] a').at(2).trigger('click');
+        await flushPromises();
+
+        await app.find(PAGINATION_NEXT_SELECTOR).find('a').trigger('click');
+        await flushPromises();
+
+        expect(mockAxios.history.get.length).toEqual(3);
+        expect(mockAxios.history.get[2].params.offset).toEqual(30);
+        expect(app.find(ACTIVE_PAGE_SELECTOR).text()).toEqual('4');
       });
     });
   });
