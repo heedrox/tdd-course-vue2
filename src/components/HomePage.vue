@@ -30,15 +30,7 @@
               <span data-testid="post-readmore">{{ $t('feed.post.read-more') }}</span>
             </a>
           </div>
-          <nav aria-label="Page navigation example" data-testid="feed-pagination" v-if="numPages > 1">
-            <ul class="pagination">
-              <li class="page-item" v-if="ifPrevious" data-testid="pagination-previous"><a class="page-link" href="#">Previous</a></li>
-              <li :class="paginationClassesFor(page)" data-testid="page-number" v-for="page in pages" :key="`numpage-${page}`">
-                <a class="page-link" @click="selectPagination(page)">{{ page }}</a>
-              </li>
-              <li class="page-item" v-if="ifNext" data-testid="pagination-next"><a class="page-link" href="#">Next</a></li>
-            </ul>
-          </nav>
+         <Pagination :articles-count="articlesCount" @change-page="changePagination"></Pagination>
         </div>
       </div>
     </div>
@@ -46,6 +38,7 @@
 </template>
 <script>
 import AppBanner from '@/components/AppBanner';
+import Pagination from '@/components/pagination/Pagination';
 import axios from 'axios';
 import moment from 'moment';
 
@@ -53,12 +46,7 @@ export default {
   name: 'App',
   components: {
     AppBanner,
-  },
-  computed: {
-    numPages() { return Math.floor((this.articlesCount-1) / 10) + 1; },
-    pages() { return [...Array(this.numPages).keys()].map((_, idx) => idx + 1); },
-    ifPrevious() { return this.activePage > 1; },
-    ifNext() { return this.activePage < this.numPages ; }
+    Pagination
   },
   data() {
     return {
@@ -73,12 +61,6 @@ export default {
     this.state = 'LOADED';
   },
   methods: {
-    paginationClassesFor(page) {
-      return {
-        'page-item': true,
-        'active': page === this.activePage
-      };
-    },
     toPrettyDate(date) {
       moment.locale(this.$i18n.locale);
       return moment(date).format('MMMM Do, YYYY');
@@ -86,7 +68,7 @@ export default {
     clickPost(slug) {
       this.$router.push({ path: `/post/${slug}` });
     },
-    async selectPagination(page) {
+    async changePagination(page) {
       this.activePage = page;
       await this.loadArticles(page);
     },
