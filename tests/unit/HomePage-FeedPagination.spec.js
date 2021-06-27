@@ -23,13 +23,32 @@ const buildArticles = (numPageArticles, numArticlesCount) => {
 
 describe('Home Page - Feeds pagination', () => {
 
-  it('asks for the first 10 posts first time', async () => {
+  it('retrieves only the first 10 posts first time', async () => {
     mockAxios.onGet('/articles').reply(200, TWO_ARTICLES);
 
     mount(HomePage);
     await flushPromises();
 
     expect(mockAxios.history.get[0].params.limit).toEqual(10);
+  });
+
+  it('does not show pagination when <10 posts', async () => {
+    mockAxios.onGet('/articles').reply(200, TWO_ARTICLES);
+
+    const app = mount(HomePage);
+    await flushPromises();
+
+    expect(app.find(PAGINATION_SELECTOR).exists()).toBeFalsy();
+  });
+
+  it('shows pagination when >=10 posts', async () => {
+    const articles = buildArticles(10, 11);
+    mockAxios.onGet('/articles').reply(200, articles);
+
+    const app = mount(HomePage);
+    await flushPromises();
+
+    expect(app.find(PAGINATION_SELECTOR).exists()).toBeTruthy();
   });
 
   it.each`
@@ -79,7 +98,7 @@ describe('Home Page - Feeds pagination', () => {
       ${1}              | ${10}
       ${2}              | ${20}
       ${3}              | ${30}
-    `('reloads articles when another page is clicked', async ({pageNumberClicked, offsetRequested}) => {
+    `('reloads articles when another page is clicked', async ({ pageNumberClicked, offsetRequested }) => {
       const articles = buildArticles(10, 40);
       mockAxios.onGet('/articles').reply(200, articles);
       const app = mount(HomePage);
@@ -93,70 +112,53 @@ describe('Home Page - Feeds pagination', () => {
       expect(mockAxios.history.get[1].params.offset).toEqual(offsetRequested);
     });
 
-    it('shows previous when active page is greater than 1', async () => {
-      const articles = buildArticles(10, 20);
-      mockAxios.onGet('/articles').reply(200, articles);
+    describe('Previous & Next buttons', () => {
+      it('shows previous when active page is greater than 1', async () => {
+        const articles = buildArticles(10, 20);
+        mockAxios.onGet('/articles').reply(200, articles);
 
-      const app = mount(HomePage);
-      await flushPromises();
+        const app = mount(HomePage);
+        await flushPromises();
 
-      await app.findAll('[data-testid=page-number] a').at(1).trigger('click');
-      await flushPromises();
+        await app.findAll('[data-testid=page-number] a').at(1).trigger('click');
+        await flushPromises();
 
-      expect(app.find(PAGINATION_PREVIOUS_SELECTOR).exists()).toBeTruthy();
+        expect(app.find(PAGINATION_PREVIOUS_SELECTOR).exists()).toBeTruthy();
+      });
+
+      it('does not show previous when active page is 1', async () => {
+        const articles = buildArticles(10, 20);
+        mockAxios.onGet('/articles').reply(200, articles);
+
+        const app = mount(HomePage);
+        await flushPromises();
+
+        expect(app.find(PAGINATION_PREVIOUS_SELECTOR).exists()).toBeFalsy();
+      });
+
+      it('shows next button', async () => {
+        const articles = buildArticles(10, 31);
+        mockAxios.onGet('/articles').reply(200, articles);
+
+        const app = mount(HomePage);
+        await flushPromises();
+
+        expect(app.find(PAGINATION_NEXT_SELECTOR).exists()).toBeTruthy();
+      });
+
+      it('does not show next when active page is last', async () => {
+        const articles = buildArticles(10, 31);
+        mockAxios.onGet('/articles').reply(200, articles);
+
+        const app = mount(HomePage);
+        await flushPromises();
+
+        await app.findAll('[data-testid=page-number] a').at(3).trigger('click');
+        await flushPromises();
+
+        expect(app.find(PAGINATION_NEXT_SELECTOR).exists()).toBeFalsy();
+      });
     });
-
-    it('does not show previous when active page is 1', async () => {
-      const articles = buildArticles(10, 20);
-      mockAxios.onGet('/articles').reply(200, articles);
-
-      const app = mount(HomePage);
-      await flushPromises();
-
-      expect(app.find(PAGINATION_PREVIOUS_SELECTOR).exists()).toBeFalsy();
-    });
-
-    it('shows next button', async () => {
-      const articles = buildArticles(10, 31);
-      mockAxios.onGet('/articles').reply(200, articles);
-
-      const app = mount(HomePage);
-      await flushPromises();
-
-      expect(app.find(PAGINATION_NEXT_SELECTOR).exists()).toBeTruthy();
-    });
-
-    it('does not show next when active page is last', async () => {
-      const articles = buildArticles(10, 31);
-      mockAxios.onGet('/articles').reply(200, articles);
-
-      const app = mount(HomePage);
-      await flushPromises();
-
-      await app.findAll('[data-testid=page-number] a').at(3).trigger('click');
-      await flushPromises();
-
-      expect(app.find(PAGINATION_NEXT_SELECTOR).exists()).toBeFalsy();
-    });
-
-  });
-  it('does not show pagination when <10 posts', async () => {
-    mockAxios.onGet('/articles').reply(200, TWO_ARTICLES);
-
-    const app = mount(HomePage);
-    await flushPromises();
-
-    expect(app.find(PAGINATION_SELECTOR).exists()).toBeFalsy();
-  });
-
-  it('shows pagination when >=10 posts', async () => {
-    const articles = buildArticles(10, 11);
-    mockAxios.onGet('/articles').reply(200, articles);
-
-    const app = mount(HomePage);
-    await flushPromises();
-
-    expect(app.find(PAGINATION_SELECTOR).exists()).toBeTruthy();
   });
 
 });
